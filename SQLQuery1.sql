@@ -1,0 +1,23 @@
+SELECT * FROM Users
+SELECT * FROM Farms
+SELECT * FROM UserFarms
+SELECT * FROM Innogotchis
+SELECT * FROM DeadInnogotchis
+SELECT * FROM Roles
+SELECT * FROM BodyParts
+SELECT * FROM InnogotchiBodyParts
+
+
+
+DBCC CHECKIDENT (Users, RESEED, 0);
+DBCC CHECKIDENT (Farms, RESEED, 0);
+DBCC CHECKIDENT (UserFarms, RESEED, 0);
+DBCC CHECKIDENT (Innogotchis, RESEED, 0);
+DBCC CHECKIDENT (DeadInnogotchis, RESEED, 0);
+
+DELETE FROM Users;
+DELETE FROM Farms;
+DELETE FROM UserFarms;
+DELETE FROM Innogotchis;
+DELETE FROM DeadInnogotchis;
+
