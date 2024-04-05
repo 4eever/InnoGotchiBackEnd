@@ -1,14 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Creator: CorelDRAW 2021.5 (Evaluation Version) -->
-<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
-viewBox="0 0 11000 8500"
- xmlns:xlink="http://www.w3.org/1999/xlink"
- xmlns:xodm="http://www.corel.com/coreldraw/odm/2003">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xodm="http://www.corel.com/coreldraw/odm/2003" xml:space="preserve" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" viewBox="3724.78 2029.29 3433.57 4238.93">
  <defs>
   <font id="FontID0" horiz-adv-x="667" font-variant="normal" style="fill-rule:nonzero" font-style="normal" font-weight="400">
-	<font-face 
-		font-family="Arial">
+	<font-face font-family="Arial">
 		<font-face-src>
 			<font-face-name name="Arial"/>
 		</font-face-src>
@@ -38,7 +31,7 @@ viewBox="0 0 11000 8500"
   <path class="fil2 str0" d="M5441.56 2423.79c872.83,-34.3 1536.98,803.6 1649.02,1463.28 -473.25,199.76 -718.88,228.96 -1579.65,296.35 -874.96,-48.97 -966.79,-49.18 -1726.66,-255.6 84.04,-661.2 773.02,-1542.13 1657.29,-1504.02z"/>
   <polygon class="fil1 str1" points="6353.96,3284.17 6410.61,3456.14 6595,3455.8 6445.61,3561.73 6502.93,3733.49 6353.96,3626.99 6204.99,3733.49 6262.31,3561.73 6112.92,3455.8 6297.31,3456.14 "/>
   <g transform="matrix(0.755927 0.654656 -0.654656 0.755927 3396.98 -3816.86)">
-   <text x="5500" y="4250"  class="fil1 fnt0">COOL</text>
+   <text x="5500" y="4250" class="fil1 fnt0">COOL</text>
   </g>
   <path class="fil0 str2" d="M3815.54 2098.74c451.42,169.97 1079.15,463.36 1601.09,465.83 562.49,2.66 1266.04,-188.61 1652.21,-450.42"/>
  </g>

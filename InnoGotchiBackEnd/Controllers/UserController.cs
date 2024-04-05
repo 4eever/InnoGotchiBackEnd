@@ -6,6 +6,7 @@ using BusinessAccessLayer.DTOs;
 using BusinessAccessLayer.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using BusinessAccessLayer.Validators;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Web_Api.Controllers
 {
@@ -20,6 +21,12 @@ namespace Web_Api.Controllers
         {
             _userService = userService;
             _userValidatorFactory = userValidatorFactory;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<UserDTO>> GetUser(int userId)
+        {
+            return Ok(await _userService.GetUser(userId));
         }
 
         [HttpPost("sing-up")]
@@ -37,7 +44,7 @@ namespace Web_Api.Controllers
         }
 
         [HttpPost("log-in")]
-        public async Task<ActionResult<UserDTO>> LogIn(UserLogInDTO userLogInDTO)
+        public async Task<ActionResult<UserDTO?>> LogIn(UserLogInDTO userLogInDTO)
         {
             var userValidator = _userValidatorFactory.GetValidator<UserLogInDTO>();
             var validationResult = await userValidator.ValidateAsync(userLogInDTO);
@@ -47,7 +54,15 @@ namespace Web_Api.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            return Ok(await _userService.LogIn(userLogInDTO));
+            var userDTO = await _userService.LogIn(userLogInDTO);
+            if (userDTO != null)
+            {
+                return Ok(userDTO);
+            }
+            else
+            {
+                return BadRequest("Неверный логин или пароль");
+            }
         }
 
         [HttpPut("account-detales")]

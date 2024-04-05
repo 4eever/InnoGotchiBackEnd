@@ -12,7 +12,8 @@ namespace BusinessAccessLayer.Services
     {
         public Task<UserDTO> SignUp(UserSignUpDTO userSignUpDTO);
         public Task<UserDTO> LogIn(UserLogInDTO userLogInDTO);
-
         public Task<UserDTO> UpdateUser(UserDTO userDTO);
+        public Task<UserDTO> GetUser(int userId);
+        public Task<int?> GetUserId(string userEmail);
     }
 }

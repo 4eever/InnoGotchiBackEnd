@@ -14,6 +14,7 @@ namespace DataAccessLayer.Repositories
         Task AddUserFarm(UserFarm userFarm);
         Task UpdateUserFarm(UserFarm userFarm);
         Task DeleteUserFarm(int userFarmId);
+
         Task<UserFarm> GetUserFarmByUserIdFarmId(int userId, int farmId);
     }
 }

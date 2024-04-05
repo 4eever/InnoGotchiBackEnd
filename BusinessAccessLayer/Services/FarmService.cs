@@ -51,7 +51,14 @@ namespace BusinessAccessLayer.Services
             var allUserFarms = (from uf in userFarms
                                 join f in farms on uf.FarmId equals f.FarmId
                                 where uf.UserId == userId
-                                select _farmMapper.Map<Farm, FarmUserAllDTO>(f)).ToList();
+                                select new FarmUserAllDTO
+                                {
+                                    FarmId = f.FarmId,
+                                    UserId = uf.UserId,
+                                    RoleId = uf.RoleId,
+                                    FarmName = f.FarmName,
+                                    PetsAlive = f.PetsAlive
+                                }).ToList();
 
             return allUserFarms;
         }
@@ -66,6 +73,12 @@ namespace BusinessAccessLayer.Services
                                  where uf.RoleId == 2 && uf.FarmId == farmId
                                  select u.UserEmail).ToList();
             return collaborators;
+        }
+
+        public async Task<string> GetFarmName(int farmId)
+        {
+            Farm farm = await _farmRepository.GetFarmById(farmId);
+            return farm.FarmName;
         }
 
         public async Task<FarmStatisticDTO> GetFarmStatistic(int farmId)

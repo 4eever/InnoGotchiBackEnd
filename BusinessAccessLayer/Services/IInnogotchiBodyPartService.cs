@@ -9,6 +9,6 @@ namespace BusinessAccessLayer.Services
 {
     public interface IInnogotchiBodyPartService
     {
-        public Task<string> GetBodyPartImage(int bodyPartId, int bodyPartNumber);
+        public Task<string? > GetBodyPartImage(string bodyPartName, int bodyPartNumber);
     }
 }

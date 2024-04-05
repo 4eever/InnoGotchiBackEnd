@@ -12,23 +12,23 @@ namespace BusinessAccessLayer.Validators
     {
         public UserDTOValidator()
         {
-            var errorMessage = "Поле '{PropertyName}' не может быть пустым.";
+            var errorMessage = "The '{PropertyName}' field cannot be empty.";
 
             RuleFor(user => user.UserEmail)
                 .NotEmpty().WithMessage(errorMessage)
-                .EmailAddress().WithMessage("Некорректный формат электронной почты.");
+                .EmailAddress().WithMessage("Invalid email format.");
 
             RuleFor(user => user.UserPassword)
                 .NotEmpty().WithMessage(errorMessage)
-                .MinimumLength(8).WithMessage("Пароль должен содержать как минимум 8 символов.");
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
 
             RuleFor(user => user.UserFirstName)
                 .NotEmpty().WithMessage(errorMessage)
-                .Matches("^[a-zA-Z]+$").WithMessage("Поле 'UserFirstName' должно содержать только буквы.");
+                .Matches("^[a-zA-Z]+$").WithMessage("First Name field should contain only letters of the Latin alphabet.");
 
             RuleFor(user => user.UserLastName)
                 .NotEmpty().WithMessage(errorMessage)
-                .Matches("^[a-zA-Z]+$").WithMessage("Поле 'UserLastName' должно содержать только буквы.");
+                .Matches("^[a-zA-Z]+$").WithMessage("Last Name field should contain only letters of the Latin alphabet.");
         }
     }
 }

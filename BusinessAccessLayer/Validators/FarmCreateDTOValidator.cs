@@ -17,14 +17,14 @@ namespace BusinessAccessLayer.Validators
         {
             _farmRepository = farmRepository;
 
-            var errorMessage = "Поле '{PropertyName}' не может быть пустым.";
+            var errorMessage = "The '{PropertyName}' field cannot be empty.";
 
             RuleFor(farm => farm.FarmName)
                 .NotEmpty().WithMessage(errorMessage)
-                .MustAsync((farm, FarmName, cancellationToken) => FarmNameUnique(FarmName)).WithMessage("Ферма с таким именем уже существует.");
+                .MustAsync((farm, FarmName, cancellationToken) => FarmNameUnique(FarmName)).WithMessage("A farm with this name already exists.");
             RuleFor(farm => farm.UserId)
                 .NotEmpty().WithMessage(errorMessage)
-                .MustAsync((farm, UserId, cancellationToken) => UniqieFarm(UserId)).WithMessage("У пользователя уже есть ферма.");
+                .MustAsync((farm, UserId, cancellationToken) => UniqieFarm(UserId)).WithMessage("The user already has a farm.");
         }
 
         private async Task<bool> FarmNameUnique(string farmName)

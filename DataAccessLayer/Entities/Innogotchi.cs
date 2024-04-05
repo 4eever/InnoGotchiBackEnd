@@ -53,6 +53,9 @@ namespace DataAccessLayer.Entities
         [Required]
         public int HappinessDays { get; set; }
 
+        [Required]
+        public DateTime LastCheckHappinessDays { get; set; }
+
         // Внешний ключ для связи с Farm
         [Required]
         public int FarmId { get; set; }

@@ -13,7 +13,18 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                      });
+});
 
 // Add services to the container.
 
@@ -32,32 +43,7 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-//services
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IFarmService, FarmService>();
-builder.Services.AddScoped<IUserFarmService, UserFarmService>();
-builder.Services.AddScoped<IInnogotchiService, InnogotchiService>();
-builder.Services.AddScoped<IInnogotchiBodyPartService, InnogotchiBodyPartService>();
-
-//repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IFarmRepository, FarmRepository>();
-builder.Services.AddScoped<IUserFarmRepository, UserFarmRepository>();
-builder.Services.AddDbContext<ApplicationContext>();
-builder.Services.AddScoped<IInnogotchiRepository, InnogotchiRepository>();
-builder.Services.AddScoped<IDeadInnogotchiRepository, DeadInnogotchiRepository>();
-builder.Services.AddScoped<IInnogotchiBodyPartRepository, InnogotchiBodyPartRepository>();
-
-//automapper
-builder.Services.AddAutoMapper(typeof(AutoMapperUserProfile));
-builder.Services.AddAutoMapper(typeof(AutoMapperFarmProfile));
-builder.Services.AddAutoMapper(typeof(AutoMapperUserFarmProfile));
-builder.Services.AddAutoMapper(typeof(AutoMapperInnogotchiProfile));
-
-//validators
-builder.Services.AddScoped<IUserValidatorFactory, UserValidatorFactory>();
-builder.Services.AddScoped<IFarmValidatorFactory, FarmValidatorFactory>();
-builder.Services.AddScoped<IInnogotchiValidatorFactory, InnogotchiValidatorFactory>();
+builder.Services.AddCustomServices();
 
 builder.Services.AddScoped<IApplicationContext, ApplicationContext>();
 
@@ -82,7 +68,7 @@ builder.Services.AddAuthorization(options =>
             var httpContext = context.Resource as HttpContext;
             if (httpContext == null)
             {
-                return false; // Ensure that we have an HttpContext
+                return false;
             }
 
             var routeFarmId = httpContext.Request.Query["farmId"].ToString();
@@ -100,12 +86,14 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+app.UseCors(MyAllowSpecificOrigins);
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
