@@ -17,30 +17,30 @@ namespace BusinessAccessLayer.Validators
         {
             _innogotchiRepository = innogotchiRepository;
 
-            var errorMessage = "Поле '{PropertyName}' не может быть пустым.";
+            var errorMessage = "The '{PropertyName}' field cannot be empty.";
 
             RuleFor(innogotchi => innogotchi.FarmId)
                 .NotEmpty().WithMessage(errorMessage);
 
             RuleFor(innogotchi => innogotchi.InnogotchiName)
                 .NotEmpty().WithMessage(errorMessage)
-                .MustAsync((innogotchi, InnogotchiName, cancellationToken) => InnogotchiInuqie(InnogotchiName)).WithMessage("Инноготчи с таким именем уже существует.");
+                .MustAsync((innogotchi, InnogotchiName, cancellationToken) => InnogotchiInuqie(InnogotchiName)).WithMessage("An Innogotchi by that name already exists.");
 
-            RuleFor(innogotchi =>innogotchi.BodyNumber)
+            RuleFor(innogotchi => innogotchi.BodyNumber)
                 .NotEmpty().WithMessage(errorMessage)
-                .InclusiveBetween(1, 5).WithMessage("Номер тела должен быть от 1 до 5");
+                .InclusiveBetween(1, 5).WithMessage("Select a body");
 
             RuleFor(innogotchi => innogotchi.EyesNumber)
                 .NotEmpty().WithMessage(errorMessage)
-                .InclusiveBetween(1, 6).WithMessage("Номер глаз должен быть от 1 до 6");
+                .InclusiveBetween(1, 6).WithMessage("Select eyes");
 
             RuleFor(innogotchi => innogotchi.NoseNumber)
                 .NotEmpty().WithMessage(errorMessage)
-                .InclusiveBetween(1, 6).WithMessage("Номер носа должен быть от 1 до 6");
+                .InclusiveBetween(1, 6).WithMessage("Select a nose");
 
             RuleFor(innogotchi => innogotchi.MouthNumber)
                 .NotEmpty().WithMessage(errorMessage)
-                .InclusiveBetween(1, 5).WithMessage("Номер рта должен быть от 1 до 5");
+                .InclusiveBetween(1, 5).WithMessage("Select a mouth");
         }
 
         private async Task<bool> InnogotchiInuqie(string innohotchiName)

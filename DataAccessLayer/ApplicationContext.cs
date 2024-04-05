@@ -48,7 +48,7 @@ namespace DataAccessLayer
             );
 
             modelBuilder.Entity<InnogotchiBodyPart>().HasData(
-                new InnogotchiBodyPart { InnogotchiBodyPartId  = 1, BodyPartId = 1, InnogotchiBodyPartNumber = 1, InnogotchiBodyPartImage = SVGToBase64(@"InnogotchiImages\\Bodies\\body1.svg") },
+                new InnogotchiBodyPart { InnogotchiBodyPartId = 1, BodyPartId = 1, InnogotchiBodyPartNumber = 1, InnogotchiBodyPartImage = SVGToBase64(@"InnogotchiImages\\Bodies\\body1.svg") },
                 new InnogotchiBodyPart { InnogotchiBodyPartId = 2, BodyPartId = 1, InnogotchiBodyPartNumber = 2, InnogotchiBodyPartImage = SVGToBase64(@"InnogotchiImages\\Bodies\\body2.svg") },
                 new InnogotchiBodyPart { InnogotchiBodyPartId = 3, BodyPartId = 1, InnogotchiBodyPartNumber = 3, InnogotchiBodyPartImage = SVGToBase64(@"InnogotchiImages\\Bodies\\body3.svg") },
                 new InnogotchiBodyPart { InnogotchiBodyPartId = 4, BodyPartId = 1, InnogotchiBodyPartNumber = 4, InnogotchiBodyPartImage = SVGToBase64(@"InnogotchiImages\\Bodies\\body4.svg") },

@@ -12,6 +12,7 @@ namespace BusinessAccessLayer.Validators
     public class UserValidatorFactory : IUserValidatorFactory
     {
         private readonly IUserRepository _userRepository;
+        private bool _isValidEmail = true;
 
         public UserValidatorFactory(IUserRepository userRepository)
         {
@@ -26,7 +27,7 @@ namespace BusinessAccessLayer.Validators
             }
             else if (typeof(T) == typeof(UserLogInDTO))
             {
-                return new UserLogInDTOValidator(_userRepository) as IValidator<T>;
+                return new UserLogInDTOValidator(_userRepository, _isValidEmail) as IValidator<T>;
             }
             else if (typeof(T) == typeof(UserDTO))
             {

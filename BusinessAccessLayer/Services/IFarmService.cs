@@ -14,5 +14,6 @@ namespace BusinessAccessLayer.Services
         public Task<List<FarmUserAllDTO>> GetAllUserFarms(int userId);
         public Task<List<string>> GetCollaborators(int farmId);
         public Task<FarmStatisticDTO> GetFarmStatistic(int farmId);
+        public Task<string> GetFarmName(int farmId);
     }
 }

@@ -22,23 +22,33 @@ namespace Web_Api.Controllers
     {
         private readonly IFarmService _farmService;
         private readonly IUserFarmService _userFarmService;
+        private readonly IUserService _userService;
         private readonly IFarmValidatorFactory _farmValidatorFactory;
         private readonly IConfiguration _configuration;
 
-        public FarmController(IFarmService farmService, IFarmValidatorFactory farmValidatorFactory, IUserFarmService userFarmService, IConfiguration configuration)
+        public FarmController(IFarmService farmService, IFarmValidatorFactory farmValidatorFactory, IUserFarmService userFarmService, IConfiguration configuration, IUserService userService)
         {
             _farmService = farmService;
             _userFarmService = userFarmService;
             _farmValidatorFactory = farmValidatorFactory;
             _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpPost("log-in-farm")]
-        public async Task<ActionResult> GetToken(UserFarmDTO userFarmDTO)
+        public async Task<ActionResult<string>> GetToken(UserFarmDTO userFarmDTO)
         {
             string token = await CreateToken(userFarmDTO);
 
             return Ok(token);
+        }
+
+        [HttpGet("get-role")]
+        public async Task<ActionResult<int>> GetRole(int userId, int farmId)
+        {
+            UserFarmDTO userFarmDTO = new(userId, farmId);
+            UserFarmDTO userFarmDTOWithRole = await _userFarmService.GetUserFarm(userFarmDTO);
+            return Ok(userFarmDTOWithRole.RoleId);
         }
 
         [HttpPost("create-farm")]
@@ -67,24 +77,38 @@ namespace Web_Api.Controllers
             return Ok(await _farmService.GetAllUserFarms(userId));
         }
 
-        [HttpGet("collaborators"), Authorize(Roles = "Admin", Policy = "FarmId")] //////////////////////////
+        [HttpGet("collaborators"), Authorize(Roles = "Admin", Policy = "FarmId")]
         public async Task<ActionResult<List<string>>> GetCollaborators(int farmId)
         {
             return Ok(await _farmService.GetCollaborators(farmId));
         }
 
-        [HttpPost("add-collaborator"), Authorize(Roles = "Admin", Policy = "FarmId")] //////////////////////////
-        public async Task<ActionResult<UserFarmDTO>> AddCollaborator(int farmId, UserFarmDTO userFarmDTO)
+        [HttpPost("add-collaborator"), Authorize(Roles = "Admin", Policy = "FarmId")]
+        public async Task<ActionResult<UserFarmDTO>> AddCollaborator(int farmId, UserEmailFarmDTO userEmailFarmDTO)
         {
-            UserFarmDTO userFarmDTOCollaborator = new UserFarmDTO(userFarmDTO.UserId, userFarmDTO.FarmId, 2);
-            return Ok(await _userFarmService.CreateUserFarm(userFarmDTOCollaborator));
+            int? userId = await _userService.GetUserId(userEmailFarmDTO.UserEmail);
+
+            if (userId.HasValue)
+            {
+                UserFarmDTO userFarmDTOCollaborator = new UserFarmDTO(userId.Value, userEmailFarmDTO.FarmId, 2);
+                return Ok(await _userFarmService.CreateUserFarm(userFarmDTOCollaborator));
+            }
+            else
+            {
+                return BadRequest("User with specified email not found.");
+            }
         }
 
-        //[CustomAuthorize(Roles = "Admin", FarmId = nameof(GetFarmId))]
-        [HttpGet("farm-statistics"), Authorize(Roles = "Admin", Policy = "FarmId")] //////////////////////////////
+        [HttpGet("farm-statistics"), Authorize(Roles = "Admin", Policy = "FarmId")]
         public async Task<ActionResult<FarmStatisticDTO>> GetFarmStatistic(int farmId)
         {
             return Ok(await _farmService.GetFarmStatistic(farmId));
+        }
+
+        [HttpGet("farm-name")]
+        public async Task<ActionResult<string>> GetFarmName(int farmId)
+        {
+            return Ok(await _farmService.GetFarmName(farmId));
         }
 
         private async Task<string> CreateToken(UserFarmDTO userFarmDTO) 
@@ -113,10 +137,5 @@ namespace Web_Api.Controllers
 
             return jwt;
         }
-
-        //public string GetFarmId()
-        //{
-        //    return _httpContextAccessor.HttpContext.Request.Query["FarmId"];
-        //}
     }
 }

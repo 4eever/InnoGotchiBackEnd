@@ -3,6 +3,7 @@ using DataAccessLayer.Repositories;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,24 +18,24 @@ namespace BusinessAccessLayer.Validators
         {
             _userRepository = userRepository;
 
-            var errorMessage = "Поле '{PropertyName}' не может быть пустым.";
+            var errorMessage = "The '{PropertyName}' field cannot be empty.";
 
             RuleFor(user => user.UserEmail)
                 .NotEmpty().WithMessage(errorMessage)
-                .EmailAddress().WithMessage("Некорректный формат электронной почты.")
-                .MustAsync((user, email, cancellationToken) => BeUniqueEmail(user.UserEmail)).WithMessage("Email уже используется.");
+                .EmailAddress().WithMessage("Invalid email format.")
+                .MustAsync((user, email, cancellationToken) => BeUniqueEmail(user.UserEmail)).WithMessage("Email is already in use.");
 
             RuleFor(user => user.UserPassword)
                 .NotEmpty().WithMessage(errorMessage)
-                .MinimumLength(8).WithMessage("Пароль должен содержать как минимум 8 символов.");
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
 
             RuleFor(user => user.UserFirstName)
                 .NotEmpty().WithMessage(errorMessage)
-                .Matches("^[a-zA-Z]+$").WithMessage("Поле 'UserFirstName' должно содержать только буквы.");
+                .Matches("^[a-zA-Z]+$").WithMessage("First Name field should contain only letters of the Latin alphabet.");
 
             RuleFor(user => user.UserLastName)
                 .NotEmpty().WithMessage(errorMessage)
-                .Matches("^[a-zA-Z]+$").WithMessage("Поле 'UserLastName' должно содержать только буквы.");
+                .Matches("^[a-zA-Z]+$").WithMessage("Last Name field should contain only letters of the Latin alphabet.");
         }
 
         public async Task<bool> BeUniqueEmail(string email)

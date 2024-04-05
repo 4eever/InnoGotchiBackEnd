@@ -22,6 +22,7 @@ namespace BusinessAccessLayer.Mappings
             .ForMember(dest => dest.SumDrinkPeriods, opt => opt.MapFrom(src => 0))
             .ForMember(dest => dest.DrinkCount, opt => opt.MapFrom(src => 0))
             .ForMember(dest => dest.HappinessDays, opt => opt.MapFrom(src => 0))
+            .ForMember(dest => dest.LastCheckHappinessDays, opt => opt.MapFrom(src => DateTime.Now))
             .ReverseMap();
 
             CreateMap<InnogotchiDTO, Innogotchi>().ReverseMap();

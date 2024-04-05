@@ -22,6 +22,14 @@ namespace BusinessAccessLayer.Services
             _userRepository = userRepository;
         }
 
+        public async Task<UserDTO> GetUser(int userId)
+        {
+            User user = await _userRepository.GetUserById(userId);
+            UserDTO userDTO = _userMapper.Map<User, UserDTO>(user);
+
+            return userDTO;
+        }
+
         public async Task<UserDTO> SignUp(UserSignUpDTO userSignUpDTO)
         {
                     
@@ -36,8 +44,7 @@ namespace BusinessAccessLayer.Services
 
         public async Task<UserDTO> LogIn(UserLogInDTO userLogInDTO)
         {
-            User userEntity = _userMapper.Map<UserLogInDTO, User>(userLogInDTO);
-            User userdb = await _userRepository.GetUserByEmail(userEntity.UserEmail);
+            User userdb = await _userRepository.GetUserByEmail(userLogInDTO.UserEmail);
             UserDTO userDTOResult = _userMapper.Map<User, UserDTO>(userdb);
 
             return userDTOResult;
@@ -52,6 +59,19 @@ namespace BusinessAccessLayer.Services
             UserDTO userDTOResult = _userMapper.Map<User, UserDTO>(user);
 
             return userDTOResult;
+        }
+
+        public async Task<int?> GetUserId(string userEmail)
+        {
+            var user = await _userRepository.GetUserByEmail(userEmail);
+            if (user != null)
+            {
+                return user.UserId;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ namespace BusinessAccessLayer.DTOs
         public int SumDrinkPeriods { get; set; }
         public int DrinkCount { get; set; }
         public int HappinessDays { get; set; }
+        public DateTime LastCheckHappinessDays { get; set; }
         public int FarmId { get; set; }
     }
 }

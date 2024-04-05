@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace BusinessAccessLayer.Services
 {
@@ -17,15 +18,17 @@ namespace BusinessAccessLayer.Services
         private readonly IDeadInnogotchiRepository _deadInnogotchiRepository;
         private readonly IInnogotchiRepository _innogotchiRepository;
         private readonly IUserFarmRepository _userFarmRepository;
+        private readonly IInnogotchiBodyPartRepository _innogotchiBodyPartRepository;
         private readonly IMapper _innogotchiMapper;
 
-        public InnogotchiService(IInnogotchiRepository innogotchiRepository, IMapper inngotchiMapper, IUserFarmRepository userFarmRepository, IDeadInnogotchiRepository deadInnogotchiRepository, IFarmRepository farmRepository)
+        public InnogotchiService(IInnogotchiRepository innogotchiRepository, IMapper inngotchiMapper, IUserFarmRepository userFarmRepository, IDeadInnogotchiRepository deadInnogotchiRepository, IFarmRepository farmRepository, IInnogotchiBodyPartRepository innogotchiBodyPartRepository)
         {
             _innogotchiRepository = innogotchiRepository;
             _innogotchiMapper = inngotchiMapper;
             _userFarmRepository = userFarmRepository;
             _deadInnogotchiRepository = deadInnogotchiRepository;
             _farmRepository = farmRepository;
+            _innogotchiBodyPartRepository = innogotchiBodyPartRepository;
         }
 
         public async Task<InnogotchiCreateDTO> CreateInnogotchi(InnogotchiCreateDTO innogotchiCreateDTO)
@@ -43,33 +46,43 @@ namespace BusinessAccessLayer.Services
             return innogotchiDTOResult;
         }
 
-        public async Task<List<InnogotchiInformationDTO>> GetFarmInnogotchies(int farmId)
+        public async Task<List<InnogotchiBodyPartsDTO>> GetFarmInnogotchies(int farmId)
                            {
             List<Innogotchi> innogotchis = await _innogotchiRepository.GetAllInnogotchis();
-            List<Innogotchi> farmInnogotchis = innogotchis.Where(i => i.FarmId == farmId).ToList();
+            List<Innogotchi> farmInnogotchis = (innogotchis.Where(i => i.FarmId == farmId).ToList());
+            var innogotchiesWithUpdatedhappinessDays = await UpdateHappinessDays(farmInnogotchis);
 
-            var innogotchiInformationDTOs = new List<InnogotchiInformationDTO>();
+            var innogotchiInformationDTOs = new List<InnogotchiBodyPartsDTO>();
 
-            foreach (var farmInnogotchi in farmInnogotchis)
+            foreach (var farmInnogotchi in innogotchiesWithUpdatedhappinessDays)
             {
-                var innogotchiInformationDTO = InnogotchiToInogotchiInformationDTO(farmInnogotchi);
+                InnogotchiBodyPartsDTO innogotchiInformationDTO = await InnogotchiToInogotchiInformationDTO(farmInnogotchi);
                 innogotchiInformationDTOs.Add(innogotchiInformationDTO);
             }
 
             return innogotchiInformationDTOs;
         }
 
-        public async Task<List<InnogotchiInformationDTO>> GetAllInnogotchies(int userId)
+        public async Task<List<InnogotchiBodyPartsDTO>> GetAllInnogotchies(int userId)
         {
             List<UserFarm> userFarms = await _userFarmRepository.GetAllUserFarms();
             List<Innogotchi> innogotchis = await _innogotchiRepository.GetAllInnogotchis();
+            var innogotchiesWithUpdatedhappinessDays = await UpdateHappinessDays(innogotchis);
 
             var allInnogotchies = (from uf in userFarms
-                                   join i in innogotchis on uf.FarmId equals i.FarmId
-                                   where uf.UserId == userId && uf.RoleId ==2
-                                   select InnogotchiToInogotchiInformationDTO(i)).ToList();
+                                        join i in innogotchiesWithUpdatedhappinessDays on uf.FarmId equals i.FarmId
+                                        where uf.UserId == userId && uf.RoleId == 2
+                                        select i).ToList();
 
-            return allInnogotchies;
+            var innogotchiInformationDTOs = new List<InnogotchiBodyPartsDTO>();
+
+            foreach (var farmInnogotchi in allInnogotchies)
+            {
+                InnogotchiBodyPartsDTO innogotchiInformationDTO = await InnogotchiToInogotchiInformationDTO(farmInnogotchi);
+                innogotchiInformationDTOs.Add(innogotchiInformationDTO);
+            }
+
+            return innogotchiInformationDTOs;
         }
 
         public async Task Feed(int innogotchiId)
@@ -78,16 +91,10 @@ namespace BusinessAccessLayer.Services
             InnogotchiDTO innogotchiDTO = _innogotchiMapper.Map<Innogotchi, InnogotchiDTO>(innogotchi);
 
             int hungryPeriod = (int)((DateTime.Now - innogotchiDTO.FedLastTime).TotalDays);
-            int thirstyPeriod = (int)((DateTime.Now - innogotchiDTO.DrintLastTime).TotalDays);
 
             innogotchiDTO.SumFedPeriods += hungryPeriod;
             innogotchiDTO.FedCount += 1;
             innogotchiDTO.FedLastTime = DateTime.Now;
-
-            if (1 < thirstyPeriod && thirstyPeriod < 2)
-            {
-                innogotchiDTO.HappinessDays += 1;
-            }
 
             Innogotchi innogotchiResult = _innogotchiMapper.Map<InnogotchiDTO, Innogotchi>(innogotchiDTO);
             await _innogotchiRepository.UpdateInnogotchi(innogotchiResult);
@@ -98,17 +105,12 @@ namespace BusinessAccessLayer.Services
             Innogotchi innogotchi = await _innogotchiRepository.GetInnogotchiById(innogotchiId);
             InnogotchiDTO innogotchiDTO = _innogotchiMapper.Map<Innogotchi, InnogotchiDTO>(innogotchi);
 
-            int hungryPeriod = (int)((DateTime.Now - innogotchiDTO.FedLastTime).TotalDays);
             int thirstyPeriod = (int)((DateTime.Now - innogotchiDTO.DrintLastTime).TotalDays);
 
             innogotchiDTO.SumDrinkPeriods += thirstyPeriod;
             innogotchiDTO.DrinkCount += 1;
             innogotchiDTO.DrintLastTime = DateTime.Now;
 
-            if (1 < hungryPeriod && hungryPeriod < 2)
-            {
-                innogotchiDTO.HappinessDays += 1;
-            }
 
             Innogotchi innogotchiResult = _innogotchiMapper.Map<InnogotchiDTO, Innogotchi>(innogotchiDTO);
             await _innogotchiRepository.UpdateInnogotchi(innogotchiResult);
@@ -132,7 +134,7 @@ namespace BusinessAccessLayer.Services
             await _farmRepository.UpdateFarm(farm);
         }
 
-        public InnogotchiInformationDTO InnogotchiToInogotchiInformationDTO(Innogotchi innogotchi)
+        private async Task<InnogotchiBodyPartsDTO> InnogotchiToInogotchiInformationDTO(Innogotchi innogotchi)
         {
             int age = (int)((DateTime.Now - innogotchi.PetDOB).TotalDays / 7.0); //если меньше 7 дней, то в фронт части будет писаться newborn
 
@@ -156,11 +158,41 @@ namespace BusinessAccessLayer.Services
                 _ => "Dead"
             };
 
-            var innogotchiInformationDTO = new InnogotchiInformationDTO(innogotchi.InnogotchiId, innogotchi.FarmId, innogotchi.InnogotchiName, innogotchi.BodyNumber,
-                                                                        innogotchi.EyesNumber, innogotchi.NoseNumber, innogotchi.MouthNumber, innogotchi.HappinessDays,
+            string body = (await _innogotchiBodyPartRepository.GetInnogotchiBodyPartByBodyPartIdAndNumber(1, innogotchi.BodyNumber)).InnogotchiBodyPartImage;
+            string eyes = (await _innogotchiBodyPartRepository.GetInnogotchiBodyPartByBodyPartIdAndNumber(2, innogotchi.EyesNumber)).InnogotchiBodyPartImage;
+            string mouth = (await _innogotchiBodyPartRepository.GetInnogotchiBodyPartByBodyPartIdAndNumber(3, innogotchi.MouthNumber)).InnogotchiBodyPartImage;
+            string nose = (await _innogotchiBodyPartRepository.GetInnogotchiBodyPartByBodyPartIdAndNumber(4, innogotchi.NoseNumber)).InnogotchiBodyPartImage;
+
+            var innogotchiInformationDTO = new InnogotchiBodyPartsDTO(innogotchi.InnogotchiId, innogotchi.FarmId, innogotchi.InnogotchiName, body,
+                                                                        eyes, mouth, nose, innogotchi.HappinessDays,
                                                                         age, hungerLevel, thirstLevel);
 
             return innogotchiInformationDTO;
+        }
+
+        private async Task<List<Innogotchi>> UpdateHappinessDays(List<Innogotchi> innogotchies)
+        {
+            foreach (var innogotchi in innogotchies)
+            {
+                int hungryPeriod = (int)((DateTime.Now - innogotchi.FedLastTime).TotalDays);
+                int thirstyPeriod = (int)((DateTime.Now - innogotchi.DrintLastTime).TotalDays);
+                double lastCheckHappinessDays = (DateTime.Now - innogotchi.LastCheckHappinessDays).TotalDays;
+
+                if (
+                    (0 < hungryPeriod && hungryPeriod < 2 && 0 < thirstyPeriod && thirstyPeriod < 2 && lastCheckHappinessDays > 1 && lastCheckHappinessDays < 2) ||
+                    (((1 < hungryPeriod && hungryPeriod < 2) || (2 < hungryPeriod && hungryPeriod < 3)) && ((1 < thirstyPeriod && thirstyPeriod < 2) || (2 < thirstyPeriod && thirstyPeriod < 3)) && 2 < lastCheckHappinessDays && lastCheckHappinessDays < 3) ||
+                    ((hungryPeriod > 3 || thirstyPeriod > 3) && lastCheckHappinessDays > 3)
+                    )
+                {
+                    innogotchi.HappinessDays += 1;
+                }
+
+                if(lastCheckHappinessDays > 1) innogotchi.LastCheckHappinessDays = DateTime.Now;
+
+                await _innogotchiRepository.UpdateInnogotchi(innogotchi);
+            }
+
+            return innogotchies;
         }
     }
 }

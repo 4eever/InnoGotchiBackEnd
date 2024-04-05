@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace BusinessAccessLayer.DTOs
 {
-    public class FarmUserAllDTO
+    public class UserEmailFarmDTO
     {
+        public string UserEmail { get; set; }
         public int FarmId { get; set; }
-        public int UserId { get; set; }
-        public int RoleId { get; set; }
-        public string FarmName { get; set; }
-        public int PetsAlive { get; set; }
+        public int? RoleId { get; set; }
     }
 }
